@@ -38,8 +38,10 @@ async def request_chatbot(query, user_id):
         return data["msg"]
 
 
-@app.on_message(filters.text & filters.)
+@app.on_message(filters.text & filters.reply)
 async def eva_chatbot(client, message):
+    if message.reply_to_message.from_user.id != BOT_ID:
+        return
     user_id = message.from_user.id
     query = message.text
     msg = await request_chatbot(query, user_id)
