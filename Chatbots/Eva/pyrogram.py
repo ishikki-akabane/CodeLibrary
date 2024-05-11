@@ -38,7 +38,7 @@ async def request_chatbot(query, user_id):
         return data["msg"]
 
 
-@app.on_message()
+@app.on_message(filters.text & filters.)
 async def eva_chatbot(client, message):
     user_id = message.from_user.id
     query = message.text
