@@ -1,7 +1,6 @@
 # Developed by @Devslab
 # Author: github.com/ishikki-akabane
 
-# we assume you already established your client and using this as a plugin 
 
 import requests
 from pyrogram import Client, filters
@@ -16,7 +15,7 @@ BLUE_URL = "https://blue-api.vercel.app/chatbot1"
 BLUE_AI = "BLUE-AI-191939737" # Your Blue AI token / get it from @hackiabot on telegram 
 
 
-app = Client("EvaChatbot", API_ID, API_HASH, BOT_TOKEN)
+app = Client("EvaChatbot", API_ID, API_HASH, bot_token=BOT_TOKEN)
 
 async def request_chatbot(query, user_id):
     params = {
