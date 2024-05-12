@@ -58,7 +58,7 @@ def generate_image(prompt, image):
 # Usage in Pyrogram bot
 from pyrogram import Client
 
-bot = Client("my_bot")
+bot = Client("my_bot", 14681826, "add59ab14dbbccf3c92c65ca4477f2fa")
 
 @bot.on_message()
 async def generate_image_command(client, message):
