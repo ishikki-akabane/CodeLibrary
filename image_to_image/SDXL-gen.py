@@ -6,20 +6,7 @@ from datetime import datetime
 base_url = "https://turbo.art"
 api_url = "https://gongy--stable-diffusion-xl-turbo-model-inference.modal.run/"
 
-def guess_mime_type(image_data):
-    if image_data.startswith(b"\x89\x50\x4e\x47"):
-        return {"ext": "png", "mime": "image/png"}
-    elif image_data.startswith(b"\xff\xd8\xff\xe0") or image_data.startswith(b"\xff\xd8\xff\xe1"):
-        return {"ext": "jpg", "mime": "image/jpeg"}
-    else:
-        raise ValueError("Invalid file type")
-
 def generate_image(prompt, image_data):
-    try:
-        file_type = guess_mime_type(image_data)
-    except ValueError as e:
-        return str(e)
-
     headers = {
         "Origin": base_url,
         "Referer": base_url + "/",
@@ -29,7 +16,7 @@ def generate_image(prompt, image_data):
     form_data = MultipartEncoder(
         fields={
             "prompt": prompt,
-            "image": ("image", image_data, f"image.{file_type['ext']}"),
+            "image": ("image", image_data, f"image.png"),
             "num_iterations": "2"
         }
     )
