@@ -1,41 +1,53 @@
 import requests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 import os
-from datetime import datetime
+import time
 
 baseURL = "https://turbo.art"
 apiURL = "https://gongy--stable-diffusion-xl-turbo-model-inference.modal.run/"
 
-def generate_image(prompt, image):
-    headers = {
-        "Origin": baseURL,
-        "Referer": baseURL + "/",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    }
+def guess_mime_type(file_bytes):
+    signature = file_bytes.hex()[:8]
+    if signature == "89504e47":
+        return {"ext": "png", "mime": "image/png"}
+    elif signature.startswith("ffd8"):
+        return {"ext": "jpg", "mime": "image/jpeg"}
+    else:
+        return "Invalid file type"
 
-    multipart_data = MultipartEncoder(
-        fields={
-            "prompt": prompt,
-            "image": ("image." + "png", image, "image/png"),
-            "num_iterations": "2"
+
+def generate_image(prompt, image_path):
+    with open(image_path, "rb") as f:
+        image_bytes = f.read()
+        file_type = guess_mime_type(image_bytes)
+        if isinstance(file_type, str):
+            raise ValueError(file_type)
+            
+        headers = {
+            "Origin": baseURL,
+            "Referer": baseURL + "/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         }
-    )
+        files = {
+            "prompt": (None, prompt),
+            "image": (f"image.{file_type['ext']}", image_bytes, file_type["mime"]),
+            "num_iterations": (None, "2")
+        }
 
-    response = requests.post(
-        apiURL,
-        data=multipart_data,
-        headers={**headers, "Content-Type": multipart_data.content_type}
-    )
+        response = requests.post(
+            apiURL,
+            files=files,
+            headers=headers
+        )
 
-    if not response.ok:
-        return f"An error occurred while generating the image: {response.text}"
+        if response.status_code != 200:
+            print(f"Error: {response.status_code} - {response.text}")
+            return "An error occurred while generating the image."
 
-    file_name = f"generatedImage_{str(int(time.time()))}.{file_type['ext']}"
-    file_path = os.path.join("public", file_name)
-    with open(file_path, "wb") as f:
-        f.write(response.content)
-    
-    return file_path
+        file_path = f"generatedImage_{time.time()}.jpg"
+        with open(file_path, "wb") as image_file:
+            image_file.write(response.content)
+            print("Image generated successfully.")
+        return file_path
     
 # Usage in Pyrogram bot
 from pyrogram import Client, filters
@@ -49,7 +61,7 @@ async def generate_image_command(client, message):
         prompt = message.text.split("/generate", 1)[-1].strip()
         image_file_id = message.reply_to_message.photo.file_id
         image_data = await client.download_media(message.reply_to_message, "generate_test.png")
-        result = generate_image(prompt, image_data)
+        result = generate_image(prompt, "downloads/generate_test.png")
         if result.startswith("An error"):
             await message.reply_text(result)
         else:
