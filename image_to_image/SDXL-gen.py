@@ -6,14 +6,14 @@ from datetime import datetime
 base_url = "https://turbo.art"
 api_url = "https://gongy--stable-diffusion-xl-turbo-model-inference.modal.run/"
 
-def guess_mime_type(file):
-    signature = file.hex()[0:8]
-    if signature == "89504e47":
+def guess_mime_type(image):
+    if image.content_type == "image/png":
         return {"ext": "png", "mime": "image/png"}
-    elif signature in ["ffd8ffe0", "ffd8ffe1"]:
+    elif image.content_type == "image/jpeg":
         return {"ext": "jpg", "mime": "image/jpeg"}
     else:
         raise ValueError("Invalid file type")
+        
 
 def generate_image(prompt, image):
     try:
@@ -30,7 +30,7 @@ def generate_image(prompt, image):
     form_data = MultipartEncoder(
         fields={
             "prompt": prompt,
-            "image": ("image", image, f"image.{file_type['ext']}"),
+            "image": ("image", image.read(), f"image.{file_type['ext']}"),
             "num_iterations": "2"
         }
     )
