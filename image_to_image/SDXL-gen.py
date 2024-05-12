@@ -52,7 +52,12 @@ def generate_image(prompt, image_path):
 # Usage in Pyrogram bot
 from pyrogram import Client, filters
 
-app = Client("my_bot", 14681826, "add59ab14dbbccf3c92c65ca4477f2fa")
+API_ID = 7292939
+API_HASH = "HSJJ72892992828BSJKSOWO"
+BOT_TOKEN = "72829020:Jjshsieu920jwnbsoowyteksn"
+
+app = Client("my_bot", API_ID, API_HASH, bot_token=BOT_TOKEN)
+
 
 @app.on_message(filters.command("generate"))
 async def generate_image_command(client, message):
