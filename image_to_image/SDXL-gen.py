@@ -3,7 +3,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 import os
 from datetime import datetime
 
-base_url = "https://turbo.art"
+baseURL = "https://turbo.art"
 api_url = "https://gongy--stable-diffusion-xl-turbo-model-inference.modal.run/"
 
 def generate_image(prompt, image_data):
