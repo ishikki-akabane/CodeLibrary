@@ -47,7 +47,7 @@ def generate_image(prompt, image):
         return "An error occurred while generating the image."
 
     now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_name = f"./public/generatedImage_{now}.jpg"
+    file_name = f"generatedImage_{now}.jpg"
 
     with open(file_name, "wb") as f:
         f.write(response.content)
@@ -56,22 +56,25 @@ def generate_image(prompt, image):
     return file_name
 
 # Usage in Pyrogram bot
-from pyrogram import Client
+from pyrogram import Client, filters
 
-bot = Client("my_bot", 14681826, "add59ab14dbbccf3c92c65ca4477f2fa")
+app = Client("my_bot", 14681826, "add59ab14dbbccf3c92c65ca4477f2fa")
 
-@bot.on_message()
+@app.on_message(filters.command("generate"))
 async def generate_image_command(client, message):
-    if message.text.startswith("/generate"):
+    if message.reply_to_message and message.reply_to_message.photo:
         await message.reply_text("Processing...")
         prompt = message.text.split("/generate", 1)[-1].strip()
-        image_path = "./public/jeep.png"  # Path to the image file
-        with open(image_path, "rb") as f:
-            image_data = f.read()
+        image_file_id = message.reply_to_message.photo.file_id
+        image_data = await client.download_media(message.reply_to_message)
         result = generate_image(prompt, image_data)
         if result.startswith("An error"):
             await message.reply_text(result)
         else:
             await message.reply_photo(result)
+    else:
+        await message.reply_text("Please reply to an image with the /generate command.")
 
-bot.run()
+
+print("start...")
+app.run()
