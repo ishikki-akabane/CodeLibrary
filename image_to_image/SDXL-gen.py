@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 baseURL = "https://turbo.art"
-api_url = "https://gongy--stable-diffusion-xl-turbo-model-inference.modal.run/"
+apiURL = "https://gongy--stable-diffusion-xl-turbo-model-inference.modal.run/"
 
 def generate_image(prompt, image):
     headers = {
