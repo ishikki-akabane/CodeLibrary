@@ -65,7 +65,7 @@ async def generate_image_command(client, message):
         await message.reply_text("Processing...")
         prompt = message.text.split("/generate", 1)[-1].strip()
         image_file_id = message.reply_to_message.photo.file_id
-        image_data = await client.download_media(message.reply_to_message)
+        image_data = await client.download_media(message.reply_to_message, "generate_test.png")
         result = generate_image(prompt, image_data)
         if result.startswith("An error"):
             await message.reply_text(result)
