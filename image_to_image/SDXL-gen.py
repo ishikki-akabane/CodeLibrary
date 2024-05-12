@@ -8,38 +8,34 @@ api_url = "https://gongy--stable-diffusion-xl-turbo-model-inference.modal.run/"
 
 def generate_image(prompt, image_data):
     headers = {
-        "Origin": base_url,
-        "Referer": base_url + "/",
+        "Origin": baseURL,
+        "Referer": baseURL + "/",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     }
 
-    form_data = MultipartEncoder(
+    multipart_data = MultipartEncoder(
         fields={
             "prompt": prompt,
-            "image": ("image", image_data, f"image.png"),
+            "image": ("image." + "png", image, "image/png"),
             "num_iterations": "2"
         }
     )
 
     response = requests.post(
-        api_url,
-        data=form_data,
-        headers={"Content-Type": form_data.content_type},
-        timeout=30
+        apiURL,
+        data=multipart_data,
+        headers={**headers, "Content-Type": multipart_data.content_type}
     )
 
-    if response.status_code != 200:
-        print(response.status_code, response.text)
-        return "An error occurred while generating the image."
+    if not response.ok:
+        return f"An error occurred while generating the image: {response.text}"
 
-    now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_name = f"generatedImage_{now}.jpg"
-
-    with open(file_name, "wb") as f:
+    file_name = f"generatedImage_{str(int(time.time()))}.{file_type['ext']}"
+    file_path = os.path.join("public", file_name)
+    with open(file_path, "wb") as f:
         f.write(response.content)
-
-    print("Image generated successfully:", file_name)
-    return file_name
+    
+    return file_path
     
 # Usage in Pyrogram bot
 from pyrogram import Client, filters
