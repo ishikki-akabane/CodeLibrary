@@ -54,7 +54,7 @@ def generate_image(prompt, image):
 
     print("Image generated successfully:", file_name)
     return file_name
-
+    
 # Usage in Pyrogram bot
 from pyrogram import Client, filters
 
