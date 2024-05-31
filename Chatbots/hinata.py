@@ -37,7 +37,7 @@ async def request_chatbot(query, user_id):
         return data["msg"]
 
 
-@app.on_message(filters.text & filters.reply
+@app.on_message(filters.text & filters.reply)
 async def hinata_chatbot(client, message):
     if message.reply_to_message.from_user.id != BOT_ID:
         return
