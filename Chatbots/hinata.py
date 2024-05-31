@@ -3,7 +3,7 @@
 
 
 import requests
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 
 
 API_ID = 6283939
@@ -44,7 +44,7 @@ async def hinata_chatbot(client, message):
     user_id = message.from_user.id
     query = message.text
     msg = await request_chatbot(query, user_id)
-    await message.reply_text(msg)
+    await message.reply_text(msg, parse_mode=enums.ParseMode.DISABLED)
 
 
 print("bot started...")
